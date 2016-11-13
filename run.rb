@@ -66,7 +66,7 @@ user_bugs = tester_device_combinations.map {|combination|
 
 user_bugs_sorted = user_bugs.sort_by { |k| -k["count"] }
 
-# agregate bugs count for users
+# aggregate bugs count for users
 user_total_count = {}
 
 user_bugs.each {|tester_device| 
