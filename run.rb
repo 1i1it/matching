@@ -21,9 +21,9 @@ tester_device_array = save_csv_as_hashes_array(tester_device_keys, 'tester_devic
 # prompt user to enter countries and devices
 def get_input()
 	puts "Enter countries, separated by commas"
-	tester_countries = "GB, US" #gets
+	tester_countries = gets
 	puts "Enter devices, separated by commas"
-	device_names = "iPhone 5, Galaxy S3, Galaxy S4" #gets
+	device_names = gets
 	#save input as array of arrays, strip empty spaces for each
 	[device_names.split(",").map! {|device| device.strip()}, 
 		tester_countries.split(",").map! {|tester_country| tester_country.strip()}]
@@ -53,21 +53,20 @@ tester_device_combinations = device_ids_query.product(tester_ids_query).map {|co
 testers_using_devices = tester_device_combinations.select{|entry| tester_device_array.include?(entry)}
 
 # count how many times each combination appears in bugs array
-
 def tester_device_in_bugs_count(testerId, deviceId, bugs_array)
 	count = bugs_array.select {|bug| bug['deviceId'] == deviceId && bug['testerId'] ==  testerId}.count
 	{"testerId" => testerId, "deviceId" => deviceId, "count" => count}
 
 end 
 
+#check how many bugs each user has
 user_bugs = tester_device_combinations.map {|combination|
 			#check how many times each combination appears
 			tester_device_in_bugs_count(combination["testerId"], combination["deviceId"], bugs_array)}
 
-#check how many bugs each user has, return list in descending order	
 user_bugs_sorted = user_bugs.sort_by { |k| -k["count"] }
 
-# agregate bugs count for same users
+# agregate bugs count for users
 user_total_count = {}
 
 user_bugs.each {|tester_device| 
@@ -82,8 +81,10 @@ user_bugs.each {|tester_device|
 	end
 }
 
+# sort bugs count in descending order
 user_total_count_sorted =  Hash[user_total_count.sort_by{|k, v| v}.reverse]
 
+# save first and last name of testers from user_total_count_sorted
 result = user_total_count_sorted.map{ |key, value| 
 	tester_info = testers_array.find {|tester| tester["testerId"] == key}
 	tester_info["firstName"] + " " + tester_info["lastName"]} 
